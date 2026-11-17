@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-evergreen: #1d5a3d;
+  --color-tangerine: #ed7137;
+  --color-slateink: #263745;
+  --font-sans: "DM Sans", "Segoe UI", sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --shadow-card: 0 8px 26px rgb(34 46 36 / 9%);
+  --shadow-shell: 0 18px 60px rgb(55 47 36 / 13%);
+}
+
+:root {
+  font-family: var(--font-sans);
+  color: #263745;
+  background: #f6f2e9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-backdrop {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgb(240 220 186 / 45%), transparent 36%),
+    radial-gradient(ellipse at 91% 87%, rgb(206 220 195 / 44%), transparent 35%),
+    #f6f2e9;
+}
+
+.planner-hero {
+  background:
+    linear-gradient(90deg, rgb(15 48 36 / 78%) 0%, rgb(17 49 37 / 54%) 47%, rgb(17 49 37 / 5%) 100%),
+    linear-gradient(0deg, rgb(17 49 37 / 27%), transparent 42%),
+    url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1800&q=85") center 48% / cover;
+}
+
+.itinerary-hero {
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 96%) 0%, rgb(255 255 255 / 83%) 53%, rgb(255 255 255 / 12%) 100%),
+    url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1600&q=85") center 48% / cover;
+}
+
+.itinerary-day {
+  display: none;
+}
+
+.itinerary-day.is-active {
+  display: block;
+}
+
+@media print {
+  body,
+  .app-backdrop {
+    background: white !important;
+  }
+
+  .app-backdrop {
+    padding: 0 !important;
+  }
+
+  .app-backdrop > footer,
+  header,
+  .itinerary-hero button,
+  .day-navigation,
+  .itinerary-hero ~ div:last-of-type {
+    display: none !important;
+  }
+
+  .itinerary-day {
+    display: block !important;
+  }
+
+  .itinerary-day article {
+    break-inside: avoid;
+  }
+
+  #root > main > div {
+    max-width: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
