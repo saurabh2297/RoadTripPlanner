@@ -964,7 +964,7 @@ function App() {
     } catch (error) {
       setErrorMessage(
         error instanceof TypeError
-          ? 'Could not connect to the itinerary API. Make sure the backend is running at http://localhost:8000.'
+          ? `Could not connect to the itinerary API. Make sure the backend is running at ${API_BASE_URL} and try again.`
           : error instanceof Error
             ? error.message
             : 'Unable to generate your itinerary. Check the API connection and try again.',
