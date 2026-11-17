@@ -12,7 +12,6 @@ import {
   Fuel,
   Heart,
   Lightbulb,
-  LockKeyhole,
   LoaderCircle,
   MapPin,
   Mountain,
@@ -28,7 +27,6 @@ import type { LucideIcon } from 'lucide-react'
 
 type Destination = {
   name: string
-  distance: string
   image: string
   description: string
 }
@@ -88,28 +86,24 @@ type TripRequest = {
 const destinations: Destination[] = [
   {
     name: 'Coorg',
-    distance: '265 km',
     image:
       'https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=640&q=80',
     description: 'Coffee country & misty hills',
   },
   {
     name: 'Chikmagalur',
-    distance: '245 km',
     image:
       'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=640&q=80',
     description: 'Mountain air & coffee trails',
   },
   {
     name: 'Gokarna',
-    distance: '485 km',
     image:
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=640&q=80',
     description: 'Coastal hideaways & sunsets',
   },
   {
     name: 'Hampi',
-    distance: '350 km',
     image:
       'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=640&q=80',
     description: 'Ancient ruins & golden stone',
@@ -346,6 +340,8 @@ function Header({ itinerary, onPlan }: { itinerary: boolean; onPlan: () => void 
 }
 
 function Planner({
+  startingLocation,
+  setStartingLocation,
   destination,
   setDestination,
   days,
@@ -366,6 +362,8 @@ function Planner({
   errorMessage,
   onGenerate,
 }: {
+  startingLocation: string
+  setStartingLocation: (value: string) => void
   destination: string
   setDestination: (value: string) => void
   days: number
@@ -403,17 +401,14 @@ function Planner({
             Your next great escape starts here
           </p>
           <h1 className="max-w-[530px] text-[36px] font-extrabold leading-[1.08] tracking-[-0.04em] sm:text-[44px]">
-            Where are we
-            <br />
-            driving from Bengaluru?
+            Where are we driving from?
           </h1>
           <p className="mt-3 text-sm font-medium text-white/90 sm:text-base">
             Plan your perfect road trip with AI <Sparkles className="mb-0.5 inline h-4 w-4 text-orange-300" />
           </p>
           <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-2 text-xs font-medium text-evergreen shadow-sm">
             <MapPin size={15} className="fill-evergreen text-evergreen" />
-            Starting point: <strong>Bengaluru (BLR)</strong>
-            <LockKeyhole size={13} className="ml-1" />
+            Starting point: <strong>{startingLocation || 'Not set'}</strong>
           </div>
         </div>
         <div className="absolute bottom-6 right-7 hidden -rotate-6 text-right font-display text-2xl italic leading-tight text-white drop-shadow-lg md:block">
@@ -425,6 +420,23 @@ function Planner({
 
       <section className="relative z-[2] mx-4 -mt-[66px] rounded-2xl border border-white/80 bg-white/95 p-4 shadow-card backdrop-blur sm:mx-7 sm:p-5">
         <div className="space-y-4">
+          <div>
+            <label htmlFor="starting-location" className="mb-2 flex items-center gap-2 text-sm font-bold text-slateink">
+              <MapPin size={16} className="text-evergreen" />
+              Starting location
+            </label>
+            <div className="flex h-12 items-center gap-3 rounded-xl border border-[#e8e4dc] bg-white px-3.5 transition focus-within:border-evergreen focus-within:ring-2 focus-within:ring-evergreen/10">
+              <input
+                id="starting-location"
+                required
+                value={startingLocation}
+                onChange={(event) => setStartingLocation(event.target.value)}
+                placeholder="Enter starting city, e.g. Bengaluru, Karnataka"
+                className="min-w-0 flex-1 bg-transparent text-sm text-slateink outline-none placeholder:text-slateink/50"
+              />
+            </div>
+          </div>
+
           <div>
             <label htmlFor="destination" className="mb-2 flex items-center gap-2 text-sm font-bold text-slateink">
               <MapPin size={16} className="text-evergreen" />
@@ -625,7 +637,7 @@ function Planner({
 
           <button
             onClick={onGenerate}
-            disabled={!destination.trim() || isGenerating}
+            disabled={!startingLocation.trim() || !destination.trim() || isGenerating}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-tangerine px-5 py-3.5 text-sm font-extrabold text-white shadow-[0_6px_15px_rgba(237,112,54,0.2)] transition hover:-translate-y-0.5 hover:bg-[#e8662e] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isGenerating ? <LoaderCircle size={17} className="animate-spin" /> : <Sparkles size={17} />}
@@ -643,7 +655,7 @@ function Planner({
       <section className="px-4 pb-7 pt-6 sm:px-7">
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <h2 className="text-base font-extrabold text-slateink">Popular getaways from Bengaluru</h2>
+            <h2 className="text-base font-extrabold text-slateink">Popular getaway ideas</h2>
             <p className="mt-0.5 text-xs text-slateink/60">A little inspiration for your next drive</p>
           </div>
         </div>
@@ -657,7 +669,7 @@ function Planner({
               <img src={place.image} alt="" className="h-[92px] w-full object-cover transition duration-500 group-hover:scale-105" />
               <div className="p-2.5">
                 <span className="block text-sm font-extrabold text-slateink">{place.name}</span>
-                <span className="mt-0.5 block text-[11px] text-slateink/65">{place.distance} · {place.description}</span>
+                <span className="mt-0.5 block text-[11px] text-slateink/65">{place.description}</span>
               </div>
             </button>
           ))}
@@ -688,7 +700,7 @@ function Itinerary({
 
   const shareItinerary = async () => {
     try {
-      await navigator.clipboard.writeText(`${trip.destination} road trip itinerary from Bengaluru`)
+      await navigator.clipboard.writeText(`${trip.destination} road trip itinerary from ${trip.starting_location}`)
       setShareMessage('Trip link copied!')
     } catch {
       setShareMessage('Clipboard access is unavailable in this browser.')
@@ -709,7 +721,7 @@ function Itinerary({
             <Sparkles size={14} />
           </p>
           <h1 className="text-[30px] font-extrabold leading-tight tracking-[-0.035em] sm:text-[36px]">
-            Bengaluru <span className="text-tangerine">→</span> 
+            {trip.starting_location} <span className="text-tangerine">→</span> {trip.destination}
           </h1>
           <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-slateink/80">
             <CalendarDays size={15} />
@@ -886,6 +898,7 @@ function Itinerary({
 
 function App() {
   const [screen, setScreen] = useState<'planner' | 'itinerary'>('planner')
+  const [startingLocation, setStartingLocation] = useState('')
   const [destination, setDestination] = useState('Coorg')
   const [days, setDays] = useState(5)
   const [group, setGroup] = useState('Family')
@@ -902,8 +915,10 @@ function App() {
     setIsGenerating(true)
     setErrorMessage('')
 
+    const API_BASE_URL = 'https://roadtripplanner.onrender.com'
+
     const request: TripRequest = {
-      starting_location: 'Bengaluru, Karnataka',
+      starting_location: startingLocation.trim(),
       destination: formatDestination(destination),
       days,
       preferences: selectedPreferences,
@@ -917,7 +932,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('/generate', {
+      const response = await fetch(`${API_BASE_URL}/generate`, {
         method: 'POST',
         headers: {
           accept: 'application/json',
@@ -965,6 +980,8 @@ function App() {
         <Header itinerary={screen === 'itinerary'} onPlan={() => setScreen('planner')} />
         {screen === 'planner' ? (
           <Planner
+            startingLocation={startingLocation}
+            setStartingLocation={setStartingLocation}
             destination={destination}
             setDestination={setDestination}
             days={days}
@@ -997,7 +1014,7 @@ function App() {
         ) : null}
       </div>
       <footer className="mx-auto max-w-[860px] px-2 py-4 text-center text-[11px] font-medium text-slateink/55">
-        Made for the long way around <span aria-hidden="true">·</span> Bengaluru, India
+        Made for the long way around <span aria-hidden="true">·</span> India
       </footer>
     </main>
   )

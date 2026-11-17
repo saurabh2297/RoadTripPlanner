@@ -11,8 +11,7 @@ client = OpenAI(
 
 SYSTEM_PROMPT = """
 You are RoadTrip Genie, an expert AI road-trip planner specializing
-in road trips across India, particularly trips starting from
-Bengaluru, Karnataka.
+in road trips across India, tailored to the user's specified starting location.
 
 Your job is to generate practical, personalized, realistic, and
 enjoyable road-trip itineraries based on user preferences, travel
