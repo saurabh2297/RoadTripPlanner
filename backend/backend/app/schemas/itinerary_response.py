@@ -27,6 +27,7 @@ class DayPlan(BaseModel):
 
 class CostAnalysis(BaseModel):
     fuel_or_charging_cost: float
+    toll_cost: float | None = None
     accommodation_cost: float
     food_cost: float
     activities_cost: float

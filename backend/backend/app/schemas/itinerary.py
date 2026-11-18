@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
@@ -11,7 +11,7 @@ class Vehicle(BaseModel):
 class TripRequest(BaseModel):
     starting_location: str
     destination: str
-    days: int
+    days: int = Field(gt=0)
     preferences: list[str]
     travel_group: str
     vehicle: Vehicle

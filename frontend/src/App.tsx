@@ -6,7 +6,6 @@ import {
   Bike,
   CalendarDays,
   CarFront,
-  ChevronDown,
   Compass,
   Download,
   Fuel,
@@ -49,6 +48,7 @@ type DayPlan = {
 
 type CostAnalysis = {
   fuel_or_charging_cost: number
+  toll_cost?: number | null
   accommodation_cost: number
   food_cost: number
   activities_cost: number
@@ -131,6 +131,8 @@ const travelGroups: { label: string; icon: LucideIcon }[] = [
   { label: 'Friends', icon: UsersRound },
 ]
 
+const API_BASE_URL = import.meta.env.DEV ? '' : 'https://roadtripplanner.onrender.com'
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
@@ -164,6 +166,9 @@ function isTripResponse(value: unknown): value is TripResponse {
   ]
   if (
     !costFields.every((field) => typeof cost[field] === 'number') ||
+    (cost.toll_cost !== undefined &&
+      cost.toll_cost !== null &&
+      typeof cost.toll_cost !== 'number') ||
     !Array.isArray(cost.assumptions) ||
     !cost.assumptions.every((assumption) => typeof assumption === 'string')
   ) {
@@ -315,26 +320,15 @@ function Header({ itinerary, onPlan }: { itinerary: boolean; onPlan: () => void 
   return (
     <header className="relative z-10 flex h-[62px] shrink-0 items-center justify-between border-b border-[#e9e5db] bg-white/90 px-5 sm:px-7">
       <Brand />
-      <div className="flex items-center gap-3 sm:gap-6">
-        {itinerary && (
-          <button
-            className="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slateink transition hover:bg-[#f4f3ec] sm:flex"
-            onClick={onPlan}
-          >
-            <Compass size={16} />
-            Plan a New Trip
-          </button>
-        )}
+      {itinerary && (
         <button
-          aria-label="Open profile menu"
-          className="flex items-center gap-1.5 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-evergreen"
+          className="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slateink transition hover:bg-[#f4f3ec] sm:flex"
+          onClick={onPlan}
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eed8bd] text-sm font-bold text-evergreen ring-2 ring-white">
-            SG
-          </span>
-          <ChevronDown size={14} className="text-slateink" />
+          <Compass size={16} />
+          Plan a New Trip
         </button>
-      </div>
+      )}
     </header>
   )
 }
@@ -850,6 +844,7 @@ function Itinerary({
         </summary>
         <dl className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
           <div><dt className="text-slateink/60">Fuel / charging</dt><dd className="font-bold">{formatCurrency(trip.cost_analysis.fuel_or_charging_cost)}</dd></div>
+          <div><dt className="text-slateink/60">Tolls</dt><dd className="font-bold">{typeof trip.cost_analysis.toll_cost === 'number' ? formatCurrency(trip.cost_analysis.toll_cost) : 'Unavailable'}</dd></div>
           <div><dt className="text-slateink/60">Accommodation</dt><dd className="font-bold">{formatCurrency(trip.cost_analysis.accommodation_cost)}</dd></div>
           <div><dt className="text-slateink/60">Food</dt><dd className="font-bold">{formatCurrency(trip.cost_analysis.food_cost)}</dd></div>
           <div><dt className="text-slateink/60">Activities</dt><dd className="font-bold">{formatCurrency(trip.cost_analysis.activities_cost)}</dd></div>
@@ -915,8 +910,6 @@ function App() {
     setIsGenerating(true)
     setErrorMessage('')
 
-    const API_BASE_URL = 'https://roadtripplanner.onrender.com'
-
     const request: TripRequest = {
       starting_location: startingLocation.trim(),
       destination: formatDestination(destination),
@@ -964,7 +957,7 @@ function App() {
     } catch (error) {
       setErrorMessage(
         error instanceof TypeError
-          ? `Could not connect to the itinerary API. Make sure the backend is running at ${API_BASE_URL} and try again.`
+          ? `Could not connect to the itinerary API. Make sure the backend is running at ${API_BASE_URL || 'http://localhost:8000'} and try again.`
           : error instanceof Error
             ? error.message
             : 'Unable to generate your itinerary. Check the API connection and try again.',
